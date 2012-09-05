@@ -1,0 +1,4 @@
+Change all coords to ints
+Add fade-in for player shapes
+Add difficulties
+Score based on orientation

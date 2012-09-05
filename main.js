@@ -13,10 +13,12 @@ var game = {
           var maxX = button.x + width / 2;
           var minY = button.y - game.buttonFontSize / 2;
           var maxY = button.y + game.buttonFontSize / 2;
-          if (e.pageX <= maxX &&
-              e.pageX >= minX &&
-              e.pageY <= maxY &&
-              e.pageY >= minY) {
+          var x = e.pageX - canvas.offsetLeft;
+          var y = e.pageY - canvas.offsetTop;
+          if (x <= maxX &&
+              x >= minX &&
+              y <= maxY &&
+              y >= minY) {
             game.setState(button.state);
             break;
           }
@@ -103,10 +105,12 @@ var game = {
           var maxX = button.x + width / 2;
           var minY = button.y - game.buttonFontSize / 2;
           var maxY = button.y + game.buttonFontSize / 2;
-          if (e.pageX <= maxX &&
-              e.pageX >= minX &&
-              e.pageY <= maxY &&
-              e.pageY >= minY) {
+          var x = e.pageX - canvas.offsetLeft;
+          var y = e.pageY - canvas.offsetTop;
+          if (x <= maxX &&
+              x >= minX &&
+              y <= maxY &&
+              y >= minY) {
             canvas.style.cursor = 'pointer';
             changed = true;
             break;
@@ -205,7 +209,9 @@ Run.prototype.keypressHandler = function(e) {
 };
 Run.prototype.clickHandler = function(e) {
   var shape = game.run.playerShapes[game.run.current];
-  shape.setCoords(e.pageX, e.pageY);
+  var x = e.pageX - canvas.offsetLeft;
+  var y = e.pageY - canvas.offsetTop;
+  shape.setCoords(x, y);
   game.run.current++;
   game.run.draw();
   if (game.run.current == game.run.numShapes) {
@@ -264,7 +270,6 @@ Run.prototype.score = function() {
     if (bestShape !== null) {
       score += bestScore;
       game.run.targetShapes.splice(j, 1);
-      game.run.draw();
     }
   }
   return score * Math.ceil(1 / (this.time / 10));
@@ -285,7 +290,7 @@ Run.prototype.start = function() {
 }
 
 // SHAPES
-var shapeSizes = [{width: 10, height: 10}, {width: 30, height: 30}];
+var shapeSizes = [{width: 10, height: 10}, {width: 30, height: 30}, {width: 20, height: 30}];
 var shapeColors = ["blue", "red"];
 function Shape(x, y, color, size) {
   this.x = x;
@@ -303,8 +308,8 @@ Shape.prototype.setColor = function(color) {
   this.color = color;
 }
 Shape.prototype.setCoords = function(x, y) {
-  this.x = x;
-  this.y = y;
+  this.x = parseInt(x);
+  this.y = parseInt(y);
 }
 
 function Square(x, y, color, size) {
@@ -317,9 +322,8 @@ Square.prototype.draw = function(outline) {
   var height = shapeSizes[this.size].height;
   ctx.translate(this.x, this.y);
   ctx.rotate(this.angle);
-  var x, y;
-    x = -width/2;
-    y = -height/2;
+  var x = parseInt(-width/2);
+  var y = parseInt(-height/2);
   if (outline) {
     ctx.strokeStyle = shapeColors[this.color];
     ctx.strokeRect(x, y, width, height);
