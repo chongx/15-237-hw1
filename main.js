@@ -34,7 +34,28 @@ var game = {
         game.setState(0);
         break;
       case 4:
-        alert('credits');
+        game.setState(0);
+        break;
+      case 5:
+        ctx.font = game.buttonFont;
+        for (var i in game.difficultyButtons) {
+          var button = game.difficultyButtons[i];
+          var width = ctx.measureText(button.text).width;
+          var minX = button.x - width / 2;
+          var maxX = button.x + width / 2;
+          var minY = button.y - game.buttonFontSize / 2;
+          var maxY = button.y + game.buttonFontSize / 2;
+          var x = e.pageX - canvas.offsetLeft;
+          var y = e.pageY - canvas.offsetTop;
+          if (x <= maxX &&
+              x >= minX &&
+              y <= maxY &&
+              y >= minY) {
+            game.difficulty = button.difficulty;
+            game.setState(2);
+            break;
+          }
+        }
         break;
       default:
         break;
@@ -44,6 +65,36 @@ var game = {
   buttonFont: "20px Copperplate",
   buttonFontSize: 20,
 
+  difficultyButtons: [
+    {text: "Easy", x: canvas.width / 2, y: 160, difficulty: 0}, 
+    {text: "Medium", x: canvas.width/ 2, y: 220, difficulty: 1}, 
+    {text: "Hard", x: canvas.width / 2, y: 280, difficulty: 2}
+  ],
+
+  drawCredits: function() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = "30px Copperplate";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "black";
+    ctx.fillText("Credits", canvas.width / 2, 50);
+    ctx.font = "14px Copperplate";
+    ctx.fillText("Game made by:", canvas.width / 2, 100);
+    ctx.fillText("Alexander Malyshev (amalyshev)", canvas.width / 2, 150);
+    ctx.fillText("Chong Xie (chongx)", canvas.width / 2, 200);
+    ctx.fillText("Click anywhere to continue", canvas.width / 2, 350);
+  },
+
+  drawDifficulties: function() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "rgb(60, 60, 60)";
+    ctx.textBaseline = "middle";
+    ctx.font = this.buttonFont;
+    for (var i in this.difficultyButtons) {
+      var button = this.difficultyButtons[i];
+      ctx.fillText(button.text, button.x, button.y);
+    }
+  },
+
   drawEnding: function() {
     ctx.clearRect(0, 0, canvas.width, 40);
     ctx.font = "30px Copperplate";
@@ -51,7 +102,7 @@ var game = {
     ctx.fillStyle = "black";
     ctx.fillText("You scored " + this.score + " points", canvas.width / 2, 50);
     ctx.font = "14px Copperplate";
-    ctx.fillText("Click anywhere to continue", canvas.width / 2, 350);
+    ctx.fillText("Click anywhere to continue", canvas.width / 2, 80);
   },
 
   drawInstructions: function() {
@@ -85,10 +136,11 @@ var game = {
     this.state = 0;
     canvas.addEventListener('click', game.clickHandler, false);
     canvas.addEventListener('mousemove', game.mouseMoveHandler, false);
+    ctx.lineWidth = 3;
   },
 
   introButtons: [
-    {text: "Start", x: canvas.width / 2, y: 180, state: 2}, 
+    {text: "Start", x: canvas.width / 2, y: 180, state: 5}, 
     {text: "Instructions", x: canvas.width/ 2, y: 220, state: 1}, 
     {text: "Credits", x: canvas.width / 2, y: 260, state: 4}
   ],
@@ -120,6 +172,31 @@ var game = {
           canvas.style.cursor = 'auto';
         }
         break;
+      case 5:
+        ctx.font = game.buttonFont;
+        for (var i in game.difficultyButtons) {
+          var button = game.difficultyButtons[i];
+          var width = ctx.measureText(button.text).width;
+          var minX = button.x - width / 2;
+          var maxX = button.x + width / 2;
+          var minY = button.y - game.buttonFontSize / 2;
+          var maxY = button.y + game.buttonFontSize / 2;
+          var x = e.pageX - canvas.offsetLeft;
+          var y = e.pageY - canvas.offsetTop;
+          if (x <= maxX &&
+              x >= minX &&
+              y <= maxY &&
+              y >= minY) {
+            canvas.style.cursor = 'pointer';
+            changed = true;
+            break;
+          }
+        }
+        if (!changed) {
+          canvas.style.cursor = 'auto';
+        }
+        break;
+
       default:
         break;
     }
@@ -142,12 +219,19 @@ var game = {
         this.drawInstructions();
         break;
       case 2:
-        this.run = new Run(0);
+        console.log(this.difficulty);
+        this.run = new Run(this.difficulty);
         this.run.start();
         break;
       case 3:
         this.score = this.run.score();
         this.drawEnding();
+        break;
+      case 4:
+        this.drawCredits();
+        break;
+      case 5:
+        this.drawDifficulties();
         break;
       default:
         alert('INVALID STATE');
@@ -196,6 +280,12 @@ Run.prototype.keypressHandler = function(e) {
     case 50:
       game.run.playerColor = 1;
       break;
+    case 51:
+      game.run.playerColor = 2;
+      break;
+    case 52:
+      game.run.playerColor = 3;
+      break;
     case 81:
       game.run.playerShapes[game.run.current].rotate(-1);
       break;
@@ -212,6 +302,7 @@ Run.prototype.clickHandler = function(e) {
   var x = e.pageX - canvas.offsetLeft;
   var y = e.pageY - canvas.offsetTop;
   shape.setCoords(x, y);
+  shape.fadeIn(0.0);
   game.run.current++;
   game.run.draw();
   if (game.run.current == game.run.numShapes) {
@@ -220,15 +311,17 @@ Run.prototype.clickHandler = function(e) {
 };
 Run.prototype.draw = function() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  this.drawScreen();
   this.drawStats();
+  this.drawScreen();
 }
 Run.prototype.drawStats = function() {
   ctx.font = "20px Copperplate";
   ctx.textAlign = "left";
   ctx.fillStyle = "rgb(60, 60, 60)";
-  ctx.clearRect(40, 0, 200, 40);
+  ctx.clearRect(40, 0, 500, 40);
   ctx.fillText("Time: " + this.time + " seconds", 50, 30);
+  ctx.fillText(this.current + "/" + this.numShapes + " placed", 280, 30);
+  ctx.fillText("Next: ", 450, 30);
 };
 Run.prototype.drawScreen = function() {
   for (var i in this.targetShapes) {
@@ -261,6 +354,7 @@ Run.prototype.score = function() {
       if (targetShape.color === playerShape.color &&
           targetShape.typeName === playerShape.typeName) {
         var shapeScore = parseInt((1 - Math.sqrt(Math.pow(Math.abs(targetShape.x - playerShape.x), 2) + Math.pow(Math.abs(targetShape.y - playerShape.y), 2)) / shapeSizes[targetShape.size].width) * 100);
+        shapeScore *= targetShape.compareAngle(playerShape.angle);
         if (shapeScore > bestScore) {
           bestScore = shapeScore;
           bestShape = j;
@@ -272,7 +366,7 @@ Run.prototype.score = function() {
       game.run.targetShapes.splice(j, 1);
     }
   }
-  return score * Math.ceil(1 / (this.time / 10));
+  return Math.ceil(score * Math.ceil(1 / (this.time / 10)));
 }
 Run.prototype.start = function() {
   this.draw();
@@ -291,7 +385,7 @@ Run.prototype.start = function() {
 
 // SHAPES
 var shapeSizes = [{width: 10, height: 10}, {width: 30, height: 30}, {width: 20, height: 30}];
-var shapeColors = ["blue", "red"];
+var shapeColors = ["rgba(13, 92, 148, 0.9)", "rgba(156, 19, 51, 0.9)", "rgba(16, 163, 11, 0.9)", "rgba(103, 13, 148, 0.9)"];
 function Shape(x, y, color, size) {
   this.x = x;
   this.y = y;
@@ -300,6 +394,17 @@ function Shape(x, y, color, size) {
 }
 
 Shape.prototype.angle = 0;
+Shape.prototype.fadeIn = function(opacity) {
+  this.opacity = opacity;
+  var self = this;
+  if(opacity < 1.0) {
+    setTimeout(function(shape, alpha) {
+      shape.fadeIn(alpha);
+    }, 50, this, opacity + 0.1);
+  }
+  this.draw();
+};
+Shape.prototype.opacity = 1.0;
 Shape.prototype.rotate = function(direction) {
   var d = (direction + this.angle / (Math.PI / 4)) % 8;
   this.angle = d * Math.PI / 4;
@@ -317,6 +422,12 @@ function Square(x, y, color, size) {
 }
 Square.prototype = Shape.prototype;
 Square.prototype.constructor = Square;
+Square.prototype.compareAngle = function(angle) {
+  if (parseInt(angle / Math.PI) % 2  === parseInt(this.angle / Math.PI) % 2) {
+    return 1;
+  }
+  return 0.5;
+};
 Square.prototype.draw = function(outline) {
   var width = shapeSizes[this.size].width;
   var height = shapeSizes[this.size].height;
@@ -329,7 +440,9 @@ Square.prototype.draw = function(outline) {
     ctx.strokeRect(x, y, width, height);
   } else {
     ctx.fillStyle = shapeColors[this.color];
+    ctx.globalAlpha = this.opacity;
     ctx.fillRect(x, y, width, height);
+    ctx.globalAlpha = 1.0;
   }
   ctx.setTransform(1, 0, 0, 1, 0, 0);
 }
