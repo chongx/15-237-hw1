@@ -14,3 +14,19 @@ Use the 1,2,3,4 keys to use blue, red, green, and purple respectively
 
 Press q and w to rotate your current shape left or right
 Left-click to place the shape, there is no penalty to placing shapes
+
+Ideas from Week 1
+------------------------
+We keep track of the game state with just an object (we didn't use function
+Game() because we only need one game object). Each run of the game is managed
+by its own Run object, which contains information such as where the player has
+placed shapes, current time left, and total time played.
+
+We used object inheritance to do shapes. There's a Shape base class with some
+basic functions that every shape needs, and all shapes inherit from it, with
+their own draw and compare functions.
+
+We have mousemove, keypress, and click handlers. We also used canvas
+transformations, text, and other simple canvas functions. There is also some
+use of setTimeout and setInterval to do fading out animations, as well as timer
+countdown.
