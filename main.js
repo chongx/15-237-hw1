@@ -87,6 +87,9 @@ var game = {
   drawDifficulties: function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "rgb(60, 60, 60)";
+    ctx.font = "30px Copperplate";
+    ctx.textAlign = "center";
+    ctx.fillText("Choose a difficulty", canvas.width / 2, 100);
     ctx.textBaseline = "middle";
     ctx.font = this.buttonFont;
     for (var i in this.difficultyButtons) {
@@ -165,7 +168,13 @@ var game = {
               y >= minY) {
             canvas.style.cursor = 'pointer';
             changed = true;
+            ctx.fillStyle = "rgb(100, 100, 100)";
+            ctx.fillRect(minX - 50, minY + game.buttonFontSize / 2 - 2, 40, 4);
+            ctx.fillRect(maxX + 10, minY + game.buttonFontSize / 2 - 2, 40, 4);
             break;
+          } else {
+            ctx.clearRect(minX - 50, minY + game.buttonFontSize / 2 - 2, 40, 4);
+            ctx.clearRect(maxX + 10, minY + game.buttonFontSize / 2 - 2, 40, 4);
           }
         }
         if (!changed) {
@@ -189,7 +198,13 @@ var game = {
               y >= minY) {
             canvas.style.cursor = 'pointer';
             changed = true;
+            ctx.fillStyle = "rgb(100, 100, 100)";
+            ctx.fillRect(minX - 50, minY + game.buttonFontSize / 2 - 2, 40, 4);
+            ctx.fillRect(maxX + 10, minY + game.buttonFontSize / 2 - 2, 40, 4);
             break;
+          } else {
+            ctx.clearRect(minX - 50, minY + game.buttonFontSize / 2 - 2, 40, 4);
+            ctx.clearRect(maxX + 10, minY + game.buttonFontSize / 2 - 2, 40, 4);
           }
         }
         if (!changed) {
