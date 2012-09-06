@@ -1,2 +1,8 @@
 highscores
 instructions
+more shapes
+    * circles
+    * semi circles
+    * star
+    * crescent moon
+bigger sizes for shapes
