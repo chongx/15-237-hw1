@@ -65,9 +65,9 @@ var game = {
 
   // Different buttons for difficulty
   difficultyButtons: [
-    {text: "Easy", x: canvas.width / 2, y: 160, difficulty: 0}, 
-    {text: "Medium", x: canvas.width/ 2, y: 220, difficulty: 1}, 
-    {text: "Hard", x: canvas.width / 2, y: 280, difficulty: 2}
+    {text: "Easy - 2 colors", x: canvas.width / 2, y: 160, difficulty: 0}, 
+    {text: "Medium - 3 colors", x: canvas.width/ 2, y: 220, difficulty: 1}, 
+    {text: "Hard - 4 colors", x: canvas.width / 2, y: 280, difficulty: 2}
   ],
 
   // Draws the credits page
@@ -143,14 +143,6 @@ var game = {
     ctx.fillText("When your time runs out, the game will end.", canvas.width / 2, 200);
     ctx.fillText("The color of the outline indicates the color of the shape you need to use", canvas.width / 2, 225);
     ctx.fillText("Use the 1,2,3,4 keys to use blue, red, green, and purple respectively", canvas.width / 2, 250);
-    ctx.fillStyle = "rgb(13, 92, 148)";
-    ctx.fillText("blue", 276, 250);
-    ctx.fillStyle = "rgb(156, 19, 51)";
-    ctx.fillText("red", 307, 250);
-    ctx.fillStyle = "rgb(16, 163, 11)";
-    ctx.fillText("green", 342, 250);
-    ctx.fillStyle = "rgb(103, 13, 148)";
-    ctx.fillText("purple", 413, 250);
     ctx.fillStyle = "black";
     ctx.fillText("Press q and w to rotate your current shape left or right", canvas.width / 2, 275);
     ctx.fillText("Left-click to place the shape, there is no penalty to placing shapes", canvas.width / 2, 300);
@@ -309,7 +301,11 @@ var game = {
 
 // 0 is easy, 1 is medium, 2 is hard
 // Maps difficulty to number of shapes to draw
-var gameDifficulties = [{shapeLifetime: 15.0, updateInterval: 500, baseScore: 5}, {shapeLifetime: 10.0, updateInterval: 400, baseScore: 4}, {shapeLifetime: 3.0, updateInterval: 300, baseScore: 2}];
+var gameDifficulties = [
+  {shapeLifetime: 15.0, updateInterval: 500, baseScore: 5, numColors: 2},
+  {shapeLifetime: 10.0, updateInterval: 400, baseScore: 4, numColors: 3},
+  {shapeLifetime: 3.0, updateInterval: 300, baseScore: 2, numColors: 4}
+];
 
 // A Run object keeps track of what the player has done during the current run
 // of a game
@@ -346,7 +342,7 @@ Run.prototype.genShape = function() {
       x = Math.floor(Math.random() * (canvas.width - 150)) + 75;
       y = Math.floor(Math.random() * (canvas.height - 150)) + 100;
       size = Math.floor(Math.random() * shapeSizes.length);
-      color = Math.floor(Math.random() * shapeColors.length);
+      color = Math.floor(Math.random() * gameDifficulties[game.difficulty].numColors);
       direction = Math.floor(Math.random() * 8);
    switch (shapeType) {
       case 0:
@@ -464,24 +460,24 @@ Run.prototype.getScore = function() {
   var bestScore = 0;
   var bestShape = null;
   var playerShape = game.run.playerShape;
-    for (var j in game.run.targetShapes) {
-      var targetShape = game.run.targetShapes[j]; 
-      if (targetShape.color === playerShape.color &&
-          targetShape.typeName === playerShape.typeName) {
-        var shapeScore = parseInt(
-            (1 - Math.sqrt(Math.pow(Math.abs(targetShape.x - playerShape.x), 2) + Math.pow(Math.abs(targetShape.y - playerShape.y), 2)) /
-            shapeSizes[targetShape.size].width) * 
-            gameDifficulties[game.difficulty].baseScore);
-        shapeScore *= targetShape.compareAngle(playerShape.angle);
-        if (shapeScore > bestScore) {
-          bestScore = shapeScore;
-          bestShape = j;
-        }
+  for (var j in game.run.targetShapes) {
+    var targetShape = game.run.targetShapes[j]; 
+    if (targetShape.color === playerShape.color &&
+        targetShape.typeName === playerShape.typeName) {
+      var shapeScore = parseInt(
+          (1 - Math.sqrt(Math.pow(Math.abs(targetShape.x - playerShape.x), 2) + Math.pow(Math.abs(targetShape.y - playerShape.y), 2)) /
+          shapeSizes[targetShape.size].width) * 
+          gameDifficulties[game.difficulty].baseScore);
+      shapeScore *= targetShape.compareAngle(playerShape.angle);
+      if (shapeScore > bestScore) {
+        bestScore = shapeScore;
+        bestShape = j;
       }
     }
-    if (bestShape !== null) {
-      game.run.targetShapes.splice(bestShape, 1);
-    }
+  }
+  if (bestShape !== null) {
+    game.run.targetShapes.splice(bestShape, 1);
+  }
   return Math.round(bestScore * 10) / 10;
 }
 // Starts the current game
@@ -551,12 +547,12 @@ Shape.prototype.fadeOutHelper = function(opacity, increment) {
     }, increment, this, opacity - 0.05, increment));
   } else {
     var index = game.run.staleShapes.indexOf(this);
-    if (index) {
+    if (index !== -1) {
       game.run.staleShapes.splice(index, 1);
     }
 
     var index = game.run.targetShapes.indexOf(this);
-    if (index) {
+    if (index !== -1) {
       game.run.targetShapes.splice(index, 1);
     }
   }
