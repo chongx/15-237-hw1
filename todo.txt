@@ -1,3 +1,4 @@
+update instructions
 more shapes
     * star
     * crescent moon
