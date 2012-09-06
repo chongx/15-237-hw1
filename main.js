@@ -25,15 +25,9 @@ var game = {
         }
         break;
       case 1:
-        game.setState(0);
-        break;
-      case 2:
-        alert('game state');
-        break;
       case 3:
-        game.setState(0);
-        break;
       case 4:
+      case 6:
         game.setState(0);
         break;
       case 5:
@@ -99,13 +93,30 @@ var game = {
   },
 
   drawEnding: function() {
-    ctx.clearRect(0, 0, canvas.width, 40);
+    ctx.clearRect(0, 0, canvas.width, 65);
     ctx.font = "30px Copperplate";
     ctx.textAlign = "center";
     ctx.fillStyle = "black";
     ctx.fillText("You scored " + this.score + " points", canvas.width / 2, 50);
+    if (this.score > this.highscores[this.difficulty]) {
+      this.highscores[this.difficulty] = this.score;
+      ctx.fillText("NEW HIGHSCORE!", canvas.width / 2, 75);
+    }
     ctx.font = "14px Copperplate";
-    ctx.fillText("Click anywhere to continue", canvas.width / 2, 80);
+    ctx.fillText("Click anywhere to continue", canvas.width / 2, 100);
+  },
+
+  drawHighscores: function() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.font = "30px Copperplate";
+    ctx.textAlign = "center";
+    ctx.fillStyle = "black";
+    ctx.fillText("Highscores", canvas.width / 2, 50);
+    ctx.font = "14px Copperplate";
+    ctx.fillText("Easy: " + this.highscores[0], canvas.width / 2, 100);
+    ctx.fillText("Medium: " + this.highscores[1], canvas.width / 2, 150);
+    ctx.fillText("Hard: " + this.highscores[2], canvas.width / 2, 200);
+    ctx.fillText("Click anywhere to continue", canvas.width / 2, 350);
   },
 
   drawInstructions: function() {
@@ -115,7 +126,24 @@ var game = {
     ctx.fillStyle = "black";
     ctx.fillText("Instructions", canvas.width / 2, 50);
     ctx.font = "14px Copperplate";
+
+//rgb(156, 19, 51) rgb(16, 163, 11) rgb(103, 13, 148)
     ctx.fillText("When the game starts, you will see a number of shape outlines on the screen", canvas.width / 2, 100);
+    ctx.fillText("In the top right corner, you will see the next shape you can use", canvas.width / 2, 130);
+    ctx.fillText("Place each shape as accurately as possible into its corresponding outline", canvas.width / 2, 160);
+    ctx.fillText("The color of the outline indicates the color of the shape you need to use", canvas.width / 2, 190);
+    ctx.fillText("Use the 1,2,3,4 keys to use blue, red, green, and purple respectively", canvas.width / 2, 220);
+    ctx.fillStyle = "rgb(13, 92, 148)";
+    ctx.fillText("blue", 262, 220);
+    ctx.fillStyle = "rgb(156, 19, 51)";
+    ctx.fillText("red", 300, 220);
+    ctx.fillStyle = "rgb(16, 163, 11)";
+    ctx.fillText("green", 343, 220);
+    ctx.fillStyle = "rgb(103, 13, 148)";
+    ctx.fillText("purple", 428, 220);
+    ctx.fillStyle = "black";
+    ctx.fillText("Press q and w to rotate your current shape left or right", canvas.width / 2, 250);
+    ctx.fillText("Left-click to place the shape", canvas.width / 2, 280);
     ctx.fillText("Click anywhere to continue", canvas.width / 2, 350);
   },
 
@@ -134,6 +162,8 @@ var game = {
     }
   },
 
+  highscores: [0, 0, 0],
+
   init: function() {
     this.drawIntro();
     this.state = 0;
@@ -145,7 +175,8 @@ var game = {
   introButtons: [
     {text: "Start", x: canvas.width / 2, y: 180, state: 5}, 
     {text: "Instructions", x: canvas.width/ 2, y: 220, state: 1}, 
-    {text: "Credits", x: canvas.width / 2, y: 260, state: 4}
+    {text: "Highscores", x: canvas.width / 2, y: 260, state: 6},
+    {text: "Credits", x: canvas.width / 2, y: 300, state: 4}
   ],
 
   mouseMoveHandler: function(e) {
@@ -248,6 +279,9 @@ var game = {
       case 5:
         this.drawDifficulties();
         break;
+      case 6:
+        this.drawHighscores();
+        break;
       default:
         alert('INVALID STATE');
     }
@@ -327,12 +361,14 @@ Run.prototype.clickHandler = function(e) {
   var shape = game.run.playerShapes[game.run.current];
   var x = e.pageX - canvas.offsetLeft;
   var y = e.pageY - canvas.offsetTop;
-  shape.setCoords(x, y);
-  shape.fadeIn(0.0);
-  game.run.current++;
-  game.run.draw();
-  if (game.run.current == game.run.numShapes) {
-    game.run.end();
+  if (y > 80) {
+    shape.setCoords(x, y);
+    shape.fadeIn(0.0);
+    game.run.current++;
+    game.run.draw();
+    if (game.run.current == game.run.numShapes) {
+      game.run.end();
+    }
   }
 };
 Run.prototype.draw = function() {
@@ -344,10 +380,11 @@ Run.prototype.drawStats = function() {
   ctx.font = "20px Copperplate";
   ctx.textAlign = "left";
   ctx.fillStyle = "rgb(60, 60, 60)";
-  ctx.clearRect(40, 0, 500, 40);
+  ctx.clearRect(40, 0, 450, 70);
   ctx.fillText("Time: " + this.time + " seconds", 50, 30);
   ctx.fillText(this.current + "/" + this.numShapes + " placed", 280, 30);
   ctx.fillText("Next: ", 450, 30);
+  ctx.fillRect(0, 60, canvas.width, 2);
 };
 Run.prototype.drawScreen = function() {
   for (var i in this.targetShapes) {
@@ -363,6 +400,10 @@ Run.prototype.drawScreen = function() {
 };
 Run.prototype.end = function() {
   clearInterval(this.timer);
+  // Clear all draw timeouts
+  for (var i in this.timeouts) {
+    clearTimeout(this.timeouts[i]);
+  }
   canvas.removeEventListener('click', Run.prototype.clickHandler, false);
   canvas.removeEventListener('keyup', Run.prototype.keypressHandler, false);
   game.reset();
@@ -408,6 +449,7 @@ Run.prototype.start = function() {
     game.run.drawStats();
   }, 1000);
 }
+Run.prototype.timeouts = [];
 
 // SHAPES
 var shapeSizes = [{width: 10, height: 10}, {width: 25, height: 25}, {width: 40, height: 40}];
@@ -424,9 +466,9 @@ Shape.prototype.fadeIn = function(opacity) {
   this.opacity = opacity;
   var self = this;
   if(opacity < 1.0) {
-    setTimeout(function(shape, alpha) {
+    game.run.timeouts.push(setTimeout(function(shape, alpha) {
       shape.fadeIn(alpha);
-    }, 50, this, opacity + 0.1);
+    }, 50, this, opacity + 0.1));
   }
   this.draw();
 };

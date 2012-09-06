@@ -1,9 +1,4 @@
-highscores
 instructions
-can't place shapes at the top of the screen
 more shapes
-    * circles
-    * semi circles
     * star
     * crescent moon
-bigger sizes for shapes
