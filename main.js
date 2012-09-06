@@ -79,7 +79,7 @@ var game = {
     ctx.fillText("Credits", canvas.width / 2, 50);
     ctx.font = "14px Copperplate";
     ctx.fillText("Game made by:", canvas.width / 2, 100);
-    ctx.fillText("Alexander Malyshev (amalyshev)", canvas.width / 2, 150);
+    ctx.fillText("Alexander Malyshev (amalyshe)", canvas.width / 2, 150);
     ctx.fillText("Chong Xie (chongx)", canvas.width / 2, 200);
     ctx.fillText("Click anywhere to continue", canvas.width / 2, 350);
   },
