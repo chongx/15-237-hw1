@@ -100,10 +100,10 @@ var game = {
     ctx.fillText("You scored " + this.score + " points", canvas.width / 2, 50);
     if (this.score > this.highscores[this.difficulty]) {
       this.highscores[this.difficulty] = this.score;
-      ctx.fillText("NEW HIGHSCORE!", canvas.width / 2, 75);
+      ctx.fillText("NEW HIGHSCORE!", canvas.width / 2, 95);
     }
     ctx.font = "14px Copperplate";
-    ctx.fillText("Click anywhere to continue", canvas.width / 2, 100);
+    ctx.fillText("Click anywhere to continue", canvas.width / 2, 135);
   },
 
   drawHighscores: function() {
