@@ -56,7 +56,7 @@ var game = {
     }
   },
 
-  buttonFont: "20px Copperplate",
+  buttonFont: "20px Tahoma, Geneva",
   buttonFontSize: 20,
 
   difficultyButtons: [
@@ -67,11 +67,11 @@ var game = {
 
   drawCredits: function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = "30px Copperplate";
+    ctx.font = "30px Tahoma, Geneva";
     ctx.textAlign = "center";
     ctx.fillStyle = "black";
     ctx.fillText("Credits", canvas.width / 2, 50);
-    ctx.font = "14px Copperplate";
+    ctx.font = "14px Tahoma, Geneva";
     ctx.fillText("Game made by:", canvas.width / 2, 100);
     ctx.fillText("Alexander Malyshev (amalyshe)", canvas.width / 2, 150);
     ctx.fillText("Chong Xie (chongx)", canvas.width / 2, 200);
@@ -81,7 +81,7 @@ var game = {
   drawDifficulties: function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "rgb(60, 60, 60)";
-    ctx.font = "30px Copperplate";
+    ctx.font = "30px Tahoma, Geneva";
     ctx.textAlign = "center";
     ctx.fillText("Choose a difficulty", canvas.width / 2, 100);
     ctx.textBaseline = "middle";
@@ -94,7 +94,7 @@ var game = {
 
   drawEnding: function() {
     ctx.clearRect(0, 0, canvas.width, 65);
-    ctx.font = "30px Copperplate";
+    ctx.font = "30px Tahoma, Geneva";
     ctx.textAlign = "center";
     ctx.fillStyle = "black";
     ctx.fillText("You scored " + this.score + " points", canvas.width / 2, 50);
@@ -102,17 +102,17 @@ var game = {
       this.highscores[this.difficulty] = this.score;
       ctx.fillText("NEW HIGHSCORE!", canvas.width / 2, 95);
     }
-    ctx.font = "14px Copperplate";
+    ctx.font = "14px Tahoma, Geneva";
     ctx.fillText("Click anywhere to continue", canvas.width / 2, 135);
   },
 
   drawHighscores: function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = "30px Copperplate";
+    ctx.font = "30px Tahoma, Geneva";
     ctx.textAlign = "center";
     ctx.fillStyle = "black";
     ctx.fillText("Highscores", canvas.width / 2, 50);
-    ctx.font = "14px Copperplate";
+    ctx.font = "14px Tahoma, Geneva";
     ctx.fillText("Easy: " + this.highscores[0], canvas.width / 2, 100);
     ctx.fillText("Medium: " + this.highscores[1], canvas.width / 2, 150);
     ctx.fillText("Hard: " + this.highscores[2], canvas.width / 2, 200);
@@ -121,11 +121,11 @@ var game = {
 
   drawInstructions: function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = "30px Copperplate";
+    ctx.font = "30px Tahoma, Geneva";
     ctx.textAlign = "center";
     ctx.fillStyle = "black";
     ctx.fillText("Instructions", canvas.width / 2, 50);
-    ctx.font = "14px Copperplate";
+    ctx.font = "14px Tahoma, Geneva";
 
 //rgb(156, 19, 51) rgb(16, 163, 11) rgb(103, 13, 148)
     ctx.fillText("When the game starts, you will see a number of shape outlines on the screen", canvas.width / 2, 100);
@@ -134,13 +134,13 @@ var game = {
     ctx.fillText("The color of the outline indicates the color of the shape you need to use", canvas.width / 2, 190);
     ctx.fillText("Use the 1,2,3,4 keys to use blue, red, green, and purple respectively", canvas.width / 2, 220);
     ctx.fillStyle = "rgb(13, 92, 148)";
-    ctx.fillText("blue", 262, 220);
+    ctx.fillText("blue", 276, 220);
     ctx.fillStyle = "rgb(156, 19, 51)";
-    ctx.fillText("red", 300, 220);
+    ctx.fillText("red", 307, 220);
     ctx.fillStyle = "rgb(16, 163, 11)";
-    ctx.fillText("green", 343, 220);
+    ctx.fillText("green", 342, 220);
     ctx.fillStyle = "rgb(103, 13, 148)";
-    ctx.fillText("purple", 428, 220);
+    ctx.fillText("purple", 413, 220);
     ctx.fillStyle = "black";
     ctx.fillText("Press q and w to rotate your current shape left or right", canvas.width / 2, 250);
     ctx.fillText("Left-click to place the shape", canvas.width / 2, 280);
@@ -149,7 +149,7 @@ var game = {
 
   drawIntro: function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = "40px Copperplate";
+    ctx.font = "40px Tahoma, Geneva";
     ctx.textAlign = "center";
     ctx.fillStyle = "rgb(13, 69, 92)";
     ctx.fillText("Shape Filler", canvas.width / 2, 100);
@@ -377,7 +377,7 @@ Run.prototype.draw = function() {
   this.drawScreen();
 }
 Run.prototype.drawStats = function() {
-  ctx.font = "20px Copperplate";
+  ctx.font = "20px Tahoma, Geneva";
   ctx.textAlign = "left";
   ctx.fillStyle = "rgb(60, 60, 60)";
   ctx.clearRect(40, 0, 450, 70);
