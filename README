@@ -1,0 +1,16 @@
+15-237 Homework 1
+
+Chong Xie (chongx)
+Alexander Malyshev (amalyshe)
+
+When the game starts, shape outlines will start appearing on the screen
+In the top right corner, you will see the current shape you can use
+Place each shape as accurately as possible into a matching outline
+Each time you do, you will get more time depending on your accuracy
+When your time runs out, the game will end.
+
+The color of the outline indicates the color of the shape you need to use
+Use the 1,2,3,4 keys to use blue, red, green, and purple respectively
+
+Press q and w to rotate your current shape left or right
+Left-click to place the shape, there is no penalty to placing shapes

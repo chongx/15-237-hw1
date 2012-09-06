@@ -1,3 +1,10 @@
+/**
+ * 15-237 Homework 1
+ *
+ * Chong Xie (chongx)
+ * Alexander Malyshev (amalyshe)
+ */
+
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 
