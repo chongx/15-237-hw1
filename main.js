@@ -265,7 +265,7 @@ function Run(difficulty) {
   this.playerShapes = [];
   var usedShapes = [];
   for (var i = 0; i < this.numShapes; i++) {
-    var shapeType = Math.floor(Math.random() * 1);
+    var shapeType = Math.floor(Math.random() * 3);
     var x, y, size, color, direction;
     do {
       x = Math.floor(Math.random() * (canvas.width - 150)) + 75;
@@ -280,6 +280,17 @@ function Run(difficulty) {
         this.targetShapes[i] = new Square(x, y, color, size);
         this.targetShapes[i].rotate(direction);
         this.playerShapes[i] = new Square(560, 30, color, size);
+        break;
+      case 1:
+        this.targetShapes[i] = new Circle(x, y, color, size);
+        this.targetShapes[i].rotate(direction);
+        this.playerShapes[i] = new Circle(560, 30, color, size);
+        break;
+      case 2:
+        this.targetShapes[i] = new Semi(x, y, color, size);
+        this.targetShapes[i].rotate(direction);
+        this.playerShapes[i] = new Semi(560, 30, color, size);
+        break;
       default:
         break;
     }
@@ -399,7 +410,7 @@ Run.prototype.start = function() {
 }
 
 // SHAPES
-var shapeSizes = [{width: 10, height: 10}, {width: 30, height: 30}, {width: 20, height: 30}];
+var shapeSizes = [{width: 10, height: 10}, {width: 25, height: 25}, {width: 40, height: 40}];
 var shapeColors = ["rgba(13, 92, 148, 0.9)", "rgba(156, 19, 51, 0.9)", "rgba(16, 163, 11, 0.9)", "rgba(103, 13, 148, 0.9)"];
 function Shape(x, y, color, size) {
   this.x = x;
@@ -435,7 +446,7 @@ Shape.prototype.setCoords = function(x, y) {
 function Square(x, y, color, size) {
   Shape.call(this, x, y, color, size);
 }
-Square.prototype = Shape.prototype;
+Square.prototype = new Shape();
 Square.prototype.constructor = Square;
 Square.prototype.compareAngle = function(angle) {
   if (parseInt(angle / Math.PI) % 2  === parseInt(this.angle / Math.PI) % 2) {
@@ -462,6 +473,74 @@ Square.prototype.draw = function(outline) {
   ctx.setTransform(1, 0, 0, 1, 0, 0);
 }
 Square.prototype.typeName = "square";
+
+function Circle(x, y, color, size) {
+  Shape.call(this, x, y, color, size);
+}
+Circle.prototype = new Shape();
+Circle.prototype.constructor = Circle;
+Circle.prototype.compareAngle = function(angle) { return 1; };
+Circle.prototype.draw = function(outline) {
+  var width = shapeSizes[this.size].width;
+  var height = shapeSizes[this.size].height;
+  var radius = width / 2;
+  var x = this.x;
+  var y = this.y;
+  if (outline) {
+    ctx.strokeStyle = shapeColors[this.color];
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI, true);
+    ctx.closePath();
+    ctx.stroke();
+  } else {
+    ctx.fillStyle = shapeColors[this.color];
+    ctx.globalAlpha = this.opacity;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI, true);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 1.0;
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+}
+Circle.prototype.typeName = "circle";
+
+function Semi(x, y, color, size) {
+  Shape.call(this, x, y, color, size);
+}
+Semi.prototype = new Shape();
+Semi.prototype.constructor = Semi;
+Semi.prototype.compareAngle = function(angle) {
+    if (angle === this.angle)
+        return 1;
+    return 0.2;
+};
+Semi.prototype.draw = function(outline) {
+  var width = shapeSizes[this.size].width;
+  var height = shapeSizes[this.size].height;
+  var radius = width / 2;
+  var x = this.x;
+  var y = this.y;
+  if (outline) {
+    ctx.strokeStyle = shapeColors[this.color];
+    ctx.beginPath();
+    var startAngle = this.angle;
+    ctx.arc(x, y, radius, startAngle, startAngle + Math.PI, true);
+    ctx.closePath();
+    ctx.stroke();
+  } else {
+    ctx.fillStyle = shapeColors[this.color];
+    ctx.globalAlpha = this.opacity;
+    ctx.beginPath();
+    var startAngle = this.angle;
+    ctx.arc(x, y, radius, startAngle, startAngle + Math.PI, true);
+    ctx.closePath();
+    ctx.fill();
+    ctx.globalAlpha = 1.0;
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+}
+Semi.prototype.typeName = "semi";
 
 // Start it!
 game.init();
