@@ -1,7 +1,10 @@
 var canvas = document.getElementById("myCanvas");
 var ctx = canvas.getContext("2d");
 
+// Game object that keeps track of and updates state
+// Contains many drawing functions and event handlers
 var game = {
+  // Handles clicks based on current state
   clickHandler: function(e) {
     switch (game.state) {
       case 0:
@@ -56,15 +59,18 @@ var game = {
     }
   },
 
+  // The default button font
   buttonFont: "20px Tahoma, Geneva",
   buttonFontSize: 20,
 
+  // Different buttons for difficulty
   difficultyButtons: [
     {text: "Easy", x: canvas.width / 2, y: 160, difficulty: 0}, 
     {text: "Medium", x: canvas.width/ 2, y: 220, difficulty: 1}, 
     {text: "Hard", x: canvas.width / 2, y: 280, difficulty: 2}
   ],
 
+  // Draws the credits page
   drawCredits: function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.font = "30px Tahoma, Geneva";
@@ -78,6 +84,7 @@ var game = {
     ctx.fillText("Click anywhere to continue", canvas.width / 2, 350);
   },
 
+  // Draws the difficulty choosing page
   drawDifficulties: function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "rgb(60, 60, 60)";
@@ -92,6 +99,7 @@ var game = {
     }
   },
 
+  // Draws the game ending screen
   drawEnding: function() {
     ctx.clearRect(0, 0, canvas.width, 65);
     ctx.font = "30px Tahoma, Geneva";
@@ -106,6 +114,7 @@ var game = {
     ctx.fillText("Click anywhere to continue", canvas.width / 2, 135);
   },
 
+  // Draws all the highscores
   drawHighscores: function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.font = "30px Tahoma, Geneva";
@@ -119,6 +128,7 @@ var game = {
     ctx.fillText("Click anywhere to continue", canvas.width / 2, 350);
   },
 
+  // Draws the instructions
   drawInstructions: function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.font = "30px Tahoma, Geneva";
@@ -126,8 +136,6 @@ var game = {
     ctx.fillStyle = "black";
     ctx.fillText("Instructions", canvas.width / 2, 50);
     ctx.font = "14px Tahoma, Geneva";
-
-//rgb(156, 19, 51) rgb(16, 163, 11) rgb(103, 13, 148)
     ctx.fillText("When the game starts, you will see a number of shape outlines on the screen", canvas.width / 2, 100);
     ctx.fillText("In the top right corner, you will see the next shape you can use", canvas.width / 2, 130);
     ctx.fillText("Place each shape as accurately as possible into its corresponding outline", canvas.width / 2, 160);
@@ -147,6 +155,7 @@ var game = {
     ctx.fillText("Click anywhere to continue", canvas.width / 2, 350);
   },
 
+  // Draws the introduction screen
   drawIntro: function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.font = "40px Tahoma, Geneva";
@@ -162,8 +171,10 @@ var game = {
     }
   },
 
+  // Tracks the highscores
   highscores: [0, 0, 0],
 
+  // Initiates the game
   init: function() {
     this.drawIntro();
     this.state = 0;
@@ -172,6 +183,7 @@ var game = {
     ctx.lineWidth = 3;
   },
 
+  // The set of buttons that can be clicked on the intro screen
   introButtons: [
     {text: "Start", x: canvas.width / 2, y: 180, state: 5}, 
     {text: "Instructions", x: canvas.width/ 2, y: 220, state: 1}, 
@@ -179,6 +191,7 @@ var game = {
     {text: "Credits", x: canvas.width / 2, y: 300, state: 4}
   ],
 
+  // Handles mouse move event
   mouseMoveHandler: function(e) {
     var changed = false;
     switch (game.state) {
@@ -248,13 +261,16 @@ var game = {
     }
   },
 
+  // Resets the game by re-adding handlers
   reset: function() {
     canvas.addEventListener('click', game.clickHandler, false);
     canvas.addEventListener('mousemove', game.mouseMoveHandler, false);
   },
 
+  // The current game run (Run object, see below)
   run: null,
 
+  // Sets the state to a new state
   setState: function(state) {
     this.state = state;
     switch (state) {
@@ -265,7 +281,6 @@ var game = {
         this.drawInstructions();
         break;
       case 2:
-        console.log(this.difficulty);
         this.run = new Run(this.difficulty);
         this.run.start();
         break;
@@ -287,10 +302,16 @@ var game = {
     }
   },
 
+  // Current state
   state: 0,
 }
 
+// 0 is easy, 1 is medium, 2 is hard
+// Maps difficulty to number of shapes to draw
 var gameDifficulties = [10, 30, 50];
+
+// A Run object keeps track of what the player has done during the current run
+// of a game
 function Run(difficulty) {
   this.playerColor = 0;
   this.time = 0;
@@ -298,9 +319,12 @@ function Run(difficulty) {
   this.targetShapes = [];
   this.playerShapes = [];
   var usedShapes = [];
+  // Generate a bunch of random shapes
   for (var i = 0; i < this.numShapes; i++) {
     var shapeType = Math.floor(Math.random() * 3);
     var x, y, size, color, direction;
+    // Need to make sure no two shapes that are exactly the same are at the same
+    // place (track them in usedShapes)
     do {
       x = Math.floor(Math.random() * (canvas.width - 150)) + 75;
       y = Math.floor(Math.random() * (canvas.height - 150)) + 100;
@@ -321,9 +345,9 @@ function Run(difficulty) {
         this.playerShapes[i] = new Circle(560, 30, color, size);
         break;
       case 2:
-        this.targetShapes[i] = new Semi(x, y, color, size);
+        this.targetShapes[i] = new Semicircle(x, y, color, size);
         this.targetShapes[i].rotate(direction);
-        this.playerShapes[i] = new Semi(560, 30, color, size);
+        this.playerShapes[i] = new Semicircle(560, 30, color, size);
         break;
       default:
         break;
@@ -331,8 +355,8 @@ function Run(difficulty) {
   }
   this.current = 0;
 }
+// Keypress handler for changing colors and rotating
 Run.prototype.keypressHandler = function(e) {
-  console.log(e);
   switch (e.keyCode) {
     case 49:
       game.run.playerColor = 0;
@@ -357,10 +381,12 @@ Run.prototype.keypressHandler = function(e) {
   }
   game.run.draw();
 };
+// Click handler for placing shapes
 Run.prototype.clickHandler = function(e) {
   var shape = game.run.playerShapes[game.run.current];
   var x = e.pageX - canvas.offsetLeft;
   var y = e.pageY - canvas.offsetTop;
+  // Make sure the user doesn't place inside the top stats bar
   if (y > 80) {
     shape.setCoords(x, y);
     shape.fadeIn(0.0);
@@ -371,11 +397,13 @@ Run.prototype.clickHandler = function(e) {
     }
   }
 };
+// Draws the whole game screen
 Run.prototype.draw = function() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   this.drawStats();
   this.drawScreen();
 }
+// Draws just the top bar
 Run.prototype.drawStats = function() {
   ctx.font = "20px Tahoma, Geneva";
   ctx.textAlign = "left";
@@ -386,6 +414,7 @@ Run.prototype.drawStats = function() {
   ctx.fillText("Next: ", 450, 30);
   ctx.fillRect(0, 60, canvas.width, 2);
 };
+// Draws just the shape outlines and player shapes
 Run.prototype.drawScreen = function() {
   for (var i in this.targetShapes) {
     this.targetShapes[i].draw(true);
@@ -398,6 +427,7 @@ Run.prototype.drawScreen = function() {
     this.playerShapes[this.current].draw();
   }
 };
+// Ends the current game
 Run.prototype.end = function() {
   clearInterval(this.timer);
   // Clear all draw timeouts
@@ -409,7 +439,7 @@ Run.prototype.end = function() {
   game.reset();
   game.setState(3);
 }
-
+// Scores the player based on proximity, time, orientation, color, and type
 Run.prototype.score = function() {
   var score = 0;
   for (var i in game.run.playerShapes) {
@@ -435,6 +465,7 @@ Run.prototype.score = function() {
   }
   return Math.ceil(score * Math.ceil(1 / (this.time / 10)));
 }
+// Starts the current game
 Run.prototype.start = function() {
   this.draw();
   canvas.removeEventListener('click', game.clickHandler, false);
@@ -451,17 +482,22 @@ Run.prototype.start = function() {
 }
 Run.prototype.timeouts = [];
 
-// SHAPES
+// Shape related stuff
+// ALl the possible sizes
 var shapeSizes = [{width: 10, height: 10}, {width: 25, height: 25}, {width: 40, height: 40}];
+// All the possible colors
 var shapeColors = ["rgba(13, 92, 148, 0.9)", "rgba(156, 19, 51, 0.9)", "rgba(16, 163, 11, 0.9)", "rgba(103, 13, 148, 0.9)"];
+
+// The basic shape object
 function Shape(x, y, color, size) {
   this.x = x;
   this.y = y;
   this.color = color;
   this.size = size;
 }
-
+// Starts off at default orientation
 Shape.prototype.angle = 0;
+// Function to fade a shape into view
 Shape.prototype.fadeIn = function(opacity) {
   this.opacity = opacity;
   var self = this;
@@ -473,18 +509,22 @@ Shape.prototype.fadeIn = function(opacity) {
   this.draw();
 };
 Shape.prototype.opacity = 1.0;
+// Rotates the current shape (can only rotate by Math.PI / 4)
 Shape.prototype.rotate = function(direction) {
   var d = (direction + this.angle / (Math.PI / 4)) % 8;
   this.angle = d * Math.PI / 4;
 }
+// Sets the shape's color
 Shape.prototype.setColor = function(color) {
   this.color = color;
 }
+// Sets the shape's coordinates
 Shape.prototype.setCoords = function(x, y) {
   this.x = parseInt(x);
   this.y = parseInt(y);
 }
 
+// Square shape object
 function Square(x, y, color, size) {
   Shape.call(this, x, y, color, size);
 }
@@ -516,6 +556,7 @@ Square.prototype.draw = function(outline) {
 }
 Square.prototype.typeName = "square";
 
+// Circle shape object
 function Circle(x, y, color, size) {
   Shape.call(this, x, y, color, size);
 }
@@ -547,17 +588,18 @@ Circle.prototype.draw = function(outline) {
 }
 Circle.prototype.typeName = "circle";
 
-function Semi(x, y, color, size) {
+// Semicircle shape object
+function Semicircle(x, y, color, size) {
   Shape.call(this, x, y, color, size);
 }
-Semi.prototype = new Shape();
-Semi.prototype.constructor = Semi;
-Semi.prototype.compareAngle = function(angle) {
+Semicircle.prototype = new Shape();
+Semicircle.prototype.constructor = Semicircle;
+Semicircle.prototype.compareAngle = function(angle) {
     if (angle === this.angle)
         return 1;
     return 0.2;
 };
-Semi.prototype.draw = function(outline) {
+Semicircle.prototype.draw = function(outline) {
   var width = shapeSizes[this.size].width;
   var height = shapeSizes[this.size].height;
   var radius = width / 2;
@@ -582,7 +624,7 @@ Semi.prototype.draw = function(outline) {
   }
   ctx.setTransform(1, 0, 0, 1, 0, 0);
 }
-Semi.prototype.typeName = "semi";
+Semicircle.prototype.typeName = "semicircle";
 
 // Start it!
 game.init();
